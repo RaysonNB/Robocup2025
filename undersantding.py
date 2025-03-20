@@ -22,7 +22,7 @@ for i in range(3):
     Speech2: Go to the $ROOM, find the person who is $POSE/GESTURE and tell (him | her) $TELL_LIST.
     
     (Questions)
-    Question1: which Task is it(just one)?
+    Question1: which Task is it(just one) [Manipulation1,Manipulation2,Vision (Enumeration)1,Vision (Enumeration)2,Vision (Description)1,Vision (Description)2,Navigation1,Navigation2,Speech1,Speech2] ?
     Question2: give me the $informations(make it in dictionary)?
     Question3: what the sentence mean, and what The robot should do(20words)(just give me one sentence)?
     
