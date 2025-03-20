@@ -1,10 +1,8 @@
 import google.generativeai as genai
 import json
-# Configuration and setup
 import time
-genai.configure(api_key='AIzaSyAHGCTBQvnNMTIXhcAFt0gEkQvAeG9mQ5A') # Replace with your actual API key
+genai.configure(api_key='AIzaSyAHGCTBQvnNMTIXhcAFt0gEkQvAeG9mQ5A')
 model = genai.GenerativeModel("gemini-2.0-flash")
-# Prepare the prompt template
 for i in range(3):
     s1=input("The Sentence: ")
     input()
@@ -24,7 +22,7 @@ for i in range(3):
     Speech2: Go to the $ROOM, find the person who is $POSE/GESTURE and tell (him | her) $TELL_LIST.
     
     (Questions)
-    Question1: which Task is it?
+    Question1: which Task is it(just one)?
     Question2: give me the $informations(make it in dictionary)?
     Question3: what the sentence mean, and what The robot should do(20words)(just give me one sentence)?
     
@@ -38,13 +36,17 @@ for i in range(3):
     """
     response = model.generate_content([s,sample_txt])
     file_data_string = response.text
-    #print(file_data_string)
+    print(file_data_string)
     file_data_string=file_data_string.replace("```","")
     file_data_string=file_data_string.replace("python","")
     file_data_string=file_data_string.replace("***","")
     file_data_string=file_data_string.replace("json","")
     dict = json.loads(file_data_string)
     print(dict["1"])
-    print(dict["2"][0])
+    s=str(dict["2"])
+    if(s[0]=="["):
+        print(dict["2"][0])
+    else:
+        print(dict["2"])
     print(dict["3"])
     time.sleep(1)
