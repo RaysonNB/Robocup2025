@@ -65,7 +65,7 @@ def testpost_api():
     return result
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=8888)
 
 '''
 import requests
