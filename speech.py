@@ -50,7 +50,7 @@ class SpeechToTextNode(object):
         else:
             rospy.logerr("nothing")
 
-
+rostopic pub /respeaker/audio_path std_msgs/String "data: '/tmp/test.wav'"
 if __name__ == "__main__":
     rospy.init_node("voice")
     SpeechToTextNode()
