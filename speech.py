@@ -1,67 +1,48 @@
-#!/usr/bin/env python3
-import rospy
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
-import cv2
-from pcms.openvino_models import Yolov8, HumanPoseEstimation
-from open_manipulator_msgs.srv import SetJointPosition, SetJointPositionRequest
-from open_manipulator_msgs.srv import SetKinematicsPose, SetKinematicsPoseRequest
-import numpy as np
-from geometry_msgs.msg import Twist
-from pcms.pytorch_models import *
-from pcms.openvino_yolov8 import *
-import math
-import time
-from mr_voice.msg import Voice
-from std_msgs.msg import String
-from sensor_msgs.msg import Imu
-from tf.transformations import euler_from_quaternion
-from gtts import gTTS
-from playsound import playsound
-import requests
-import json
+import speech_recognition as sr
+import pyttsx3
 
+# Initialize text-to-speech engine
+engine = pyttsx3.init()
 
-def callback_voice(msg):
-    global s
-    s = msg.text
+def speak(text):
+    """Convert text to speech"""
+    engine.say(text)
+    engine.runAndWait()
 
-def say(g):
-    os.system(f'espeak "{g}"')
-    rospy.loginfo(g)
+# Initialize speech recognizer
+r = sr.Recognizer()
 
-if __name__ == "__main__":
-    rospy.init_node("demo")
-    rospy.loginfo("demo node start!")
-    '''
-    print("speaker")
-    rospy.Subscriber("/voice/text", Voice, callback_voice)
-    publisher_speaker = rospy.Publisher("/speaker/say", String, queue_size=10)
-    print("load")'''
-    for i in range(3):
-        s1=input("The sentence is: ")
-        api_url = "http://192.168.50.147:8888/Fambot"
-        my_todo = {"Question1":"None","Question2":"None","Question3":"None","Steps":0,"Voice":s1}
-        response = requests.post(api_url, json=my_todo, timeout=2.5)
-        result = response.json()
-        print("post",result)
-        
-        while True:
-            r = requests.get("http://192.168.50.147:8888/Fambot",timeout=2.5)
-            response_data = r.text
-            dictt = json.loads(response_data)
-            if dictt["Steps"] == 1:
-                break
-            pass
-            time.sleep(2)
-        Q1=dictt["Question1"]
-        Q2=dictt["Question2"]
-        Q3=dictt["Question3"]
-        print(Q1)
-        print(Q2)
-        print(Q3)
-        
-        
-#Get a detergent from the tray B and bring it to Adam in the living room
+with sr.Microphone() as source:
+    # Voice introduction
+    speak("You have 10 seconds to speak your command. Begin after the countdown.")
+    print("Recording for 10 seconds... (Speak after countdown)")
 
-        
+    # Countdown
+    speak("3")
+    speak("2")
+    speak("1")
+    speak("Speak now")
+
+    # Record for exactly 10 seconds
+    audio_text = r.record(source, duration=10)
+
+    speak("Recording complete")
+    print("Recording complete")
+
+    try:
+        # Recognize speech using Google Web Speech API
+        recognized_text = r.recognize_google(audio_text)
+        print("You said: " + recognized_text)
+        speak("You said: " + recognized_text)
+    except sr.UnknownValueError:
+        error_msg = "Sorry, I could not understand what you said."
+        print(error_msg)
+        speak(error_msg)
+    except sr.RequestError as e:
+        error_msg = f"Could not request results: {e}"
+        print(error_msg)
+        speak("Sorry, there was an error with the speech recognition service.")
+    except Exception as e:
+        error_msg = f"Error: {e}"
+        print(error_msg)
+        speak("Sorry, an unexpected error occurred.")
